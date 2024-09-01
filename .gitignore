@@ -1,32 +1,105 @@
-# Prerequisites
-*.d
-
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Compiled Dynamic libraries
-*.so
-*.dylib
+# .NET & C# Specific
+bin/
+obj/
 *.dll
-
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
-
-# Executables
 *.exe
-*.out
-*.app
+*.pdb
+*.cache
+*.ilk
+*.log
+*.vspscc
+*.vssscc
+.vscode/
+.vs/
+
+# User-specific files
+*.user
+*.rsuser
+*.suo
+*.userosscache
+*.userprefs
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# ASP.NET Azure Web App Configuration
+azure/
+
+# Visual Studio Code
+.vscode/
+.vscode/settings.json
+.vscode/tasks.json
+.vscode/launch.json
+.vscode/extensions.json
+
+# Rider
+.idea/
+*.sln.iml
+
+# JavaScript & Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Environment Variables
+.env
+
+# Logs
+*.log
+logs/
+*.log.*
+
+# Runtime data
+*.pid
+*.seed
+*.pid.lock
+
+# Dependency directories
+node_modules/
+
+# Optional npm cache directory
+.npm
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Lock files
+package-lock.json
+yarn.lock
+
+# IDEs
+.idea/
+*.iml
+*.sublime-project
+*.sublime-workspace
+
+# macOS files
+.DS_Store
+
+# Windows files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Mono auto generated files
+mono_crash.*
+
+# Visual Studio Code
+.vscode/
+.vscode/settings.json
+.vscode/tasks.json
+.vscode/launch.json
+.vscode/extensions.json
+
+# Visual Studio for Mac
+.vscode/
+
+# Rider
+.idea/
+*.sln.iml
+
+# StyleCop
+StyleCopReport.xml
