@@ -59,20 +59,56 @@ This is a simple yet robust Stock Management API developed using .NET Core. The 
 ## Configuration
 ### Database Configuration
   The connection string for the database is configured in the appsettings.json file:
-   
-```"ConnectionStrings": {
-"DefaultConnection": "Server=localhost,15432;Database=StockManagementDb;User Id=sa;Password=AdventurePass*123;Trusted_Connection=False;MultipleActiveResultSets=true"
-}```
+  ```json 
+  "ConnectionStrings": {
+   "DefaultConnection": "Server=localhost,15432;Database=StockManagementDb;User Id=sa;Password=AdventurePass*123;Trusted_Connection=False;MultipleActiveResultSets=true"
+  }
+  ```
 
 ## Email Configuration
 Email settings are also configured in appsettings.json:
-```"EmailSettings": {
+``` json
+"EmailSettings": {
   "SmtpServer": "smtp.example.com",
   "SmtpPort": 587,
   "SenderName": "Your Name",
   "SenderEmail": "your-email@example.com",
   "Username": "your-smtp-username",
   "Password": "your-smtp-password"
-}```
+}
+```
 
 ## Endpoints
+### Endpoints
+* Create a Product
+* POST /api/products
+* Request Body:
+``` json
+{
+  "name": "Sample Product",
+  "stockQuantity": 50,
+  "price": 19.99
+}
+```
+
+### Update Product Price with Delay
+* PUT /api/products/{id}/price
+* Request Body:
+``` json
+{
+  "ProductID": 1
+  "newPrice": 25.00
+}
+```
+
+### List Products with Filtering
+* GET /api/products?minPrice=10&maxPrice=50&minStock=10
+### Get Product by ID
+* GET /api/products/{id}
+## Architecture
+* Core Layer: Contains the entities and interfaces. This layer defines the business models and contracts (interfaces) that the application uses.
+* Infrastructure Layer: Handles database operations and external services like email. It uses Entity Framework Core for database interactions.
+* API Layer: Exposes the application functionality through HTTP endpoints. It handles incoming requests, delegates them to the appropriate services, and returns responses.
+
+## Contributing
+    Contributions are welcome! Please submit a pull request or open an issue to suggest improvements or report bugs.
