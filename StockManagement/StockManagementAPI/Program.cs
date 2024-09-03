@@ -2,10 +2,10 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using StockManagementAPI.API.Validations;
+using StockManagementAPI.Core.Entities;
 using StockManagementAPI.Core.Interfaces;
 using StockManagementAPI.Core.Services;
 using StockManagementAPI.Infrastructure.Data;
-
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,7 +16,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 var services = builder.Services;
 services.AddDbContext<StockManagementDbContext>(options =>
     options.UseSqlServer(connectionString));
-
+services.AddMemoryCache();
 services.AddScoped<IProductService, ProductService>();
 services.AddScoped<IEmailService, EmailService>();
 
@@ -24,6 +24,7 @@ services.AddControllers();
 services.AddFluentValidation(options => {
     options.RegisterValidatorsFromAssemblyContaining<ProductRequestValidator>();
 });
+services.Configure<CacheSettings>(builder.Configuration.GetSection("CacheSettings"));
 
 // After migration:
 services.AddFluentValidationAutoValidation();

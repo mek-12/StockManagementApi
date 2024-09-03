@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
 using StockManagementAPI.API.Models;
 using StockManagementAPI.Core.Entities;
 using StockManagementAPI.Core.Interfaces;
@@ -8,9 +10,13 @@ namespace StockManagementAPI.Core.Services {
     public class ProductService : IProductService {
         private readonly StockManagementDbContext _context;
         private readonly IEmailService _emailService;
-        public ProductService(StockManagementDbContext context, IEmailService emailService) {
+        private readonly IMemoryCache _cache;
+        private readonly int _cacheDuration;
+        public ProductService(StockManagementDbContext context, IEmailService emailService, IMemoryCache cache, IOptions<CacheSettings> cacheSettings) {
+            _cache = cache;
             _context = context;
             _emailService = emailService;
+            _cacheDuration = cacheSettings.Value.DefaultCacheDuration;
         }
 
         public async Task<ProductResponse> CreateProductAsync(ProductRequest request) {
@@ -34,7 +40,7 @@ namespace StockManagementAPI.Core.Services {
         }
 
         public async Task<UpdatePriceResponse?> UpdateProductPriceAsync(int id, UpdatePriceRequest request) {
-            var product = await _context.Products.FindAsync(id);
+            var product = await _context.Products.Include(p => p.PriceHistories).FirstOrDefaultAsync(p => p.Id == id);
             if (product == null)
                 return null;
 
@@ -60,31 +66,39 @@ namespace StockManagementAPI.Core.Services {
             };
         }
 
-        public async Task<IEnumerable<ProductResponse>> GetProductsAsync(decimal? minPrice, decimal? maxPrice, int? minStock) {
-            var query = _context.Products.AsQueryable();
+        public async Task<IEnumerable<ProductResponse>?> GetProductsAsync(decimal? minPrice, decimal? maxPrice, int? minStock) {
+            var cacheKey = $"products-{minPrice}-{maxPrice}-{minStock}";
 
-            if (minPrice.HasValue)
-                query = query.Where(p => p.Price >= minPrice.Value);
+            if (!_cache.TryGetValue(cacheKey, out List<ProductResponse>? cachedProducts)) {
+                var query = _context.Products.AsQueryable();
 
-            if (maxPrice.HasValue)
-                query = query.Where(p => p.Price <= maxPrice.Value);
+                if (minPrice.HasValue)
+                    query = query.Where(p => p.Price >= minPrice.Value);
 
-            if (minStock.HasValue)
-                query = query.Where(p => p.StockQuantity >= minStock.Value);
+                if (maxPrice.HasValue)
+                    query = query.Where(p => p.Price <= maxPrice.Value);
 
-            var products = await query.Include(p => p.PriceHistories).ToListAsync();
+                if (minStock.HasValue)
+                    query = query.Where(p => p.StockQuantity >= minStock.Value);
 
-            return products.Select(p => new ProductResponse {
-                Id = p.Id,
-                Name = p.Name,
-                StockQuantity = p.StockQuantity,
-                Price = p.Price,
-                PriceHistories = p.PriceHistories.Select(ph => new PriceHistoryResponse {
-                    OldPrice = ph.OldPrice,
-                    NewPrice = ph.NewPrice,
-                    ChangeDate = ph.ChangeDate
-                }).ToList()
-            }).ToList();
+                var products = await query.Include(p => p.PriceHistories).ToListAsync();
+
+                cachedProducts = products.Select(p => new ProductResponse {
+                    Id = p.Id,
+                    Name = p.Name,
+                    StockQuantity = p.StockQuantity,
+                    Price = p.Price,
+                    PriceHistories = p.PriceHistories.Select(ph => new PriceHistoryResponse {
+                        OldPrice = ph.OldPrice,
+                        NewPrice = ph.NewPrice,
+                        ChangeDate = ph.ChangeDate
+                    }).ToList()
+                }).ToList();
+
+                _cache.Set(cacheKey, cachedProducts, TimeSpan.FromSeconds(_cacheDuration));
+            }
+
+            return cachedProducts;
         }
 
         public async Task<ProductResponse> GetProductByIdAsync(int id) {
