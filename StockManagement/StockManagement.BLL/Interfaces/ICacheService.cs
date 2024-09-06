@@ -1,4 +1,4 @@
-﻿namespace StockManagement.API.Core.Interfaces {
+﻿namespace StockManagement.BLL.Interfaces {
     public interface ICacheService {
         T Get<T>(string key);
         void Set<T>(string key, T value, TimeSpan expiration);

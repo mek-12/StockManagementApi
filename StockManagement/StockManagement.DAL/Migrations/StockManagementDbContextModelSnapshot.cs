@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using StockManagement.API.Infrastructure.Data;
+using StockManagement.DAL.Concrete;
 
 #nullable disable
 
-namespace StockManagement.API.Migrations
+namespace StockManagement.Migrations
 {
     [DbContext(typeof(StockManagementDbContext))]
     partial class StockManagementDbContextModelSnapshot : ModelSnapshot

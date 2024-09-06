@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json;
 using StackExchange.Redis;
-using StockManagement.API.Core.Interfaces;
+using StockManagement.BLL.Interfaces;
 
-namespace StockManagement.API.Core.Services {
+namespace StockManagement.BLL.Services {
     public class RedisCacheService : ICacheService {
         private readonly IDatabase _database;
 

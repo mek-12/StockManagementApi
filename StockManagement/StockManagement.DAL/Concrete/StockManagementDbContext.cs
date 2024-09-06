@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using StockManagement.DAL.Core.Entities;
 
-namespace StockManagement.DAL.Infrastructure.Data {
+namespace StockManagement.DAL.Concrete {
     public class StockManagementDbContext : DbContext {
         public StockManagementDbContext(DbContextOptions<StockManagementDbContext> options)
            : base(options) {

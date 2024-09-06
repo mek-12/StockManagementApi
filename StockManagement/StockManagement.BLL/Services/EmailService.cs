@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Options;
-using StockManagement.API.Core.Interfaces;
 using System.Net.Mail;
 using System.Net;
 using StockManagement.CCC.Entities;
+using StockManagement.BLL.Interfaces;
 
 namespace StockManagement.API.Core.Services
 {
