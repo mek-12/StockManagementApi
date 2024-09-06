@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using StockManagement.API.Models;
+using StockManagement.CCC.Models;
 using StockManagement.API.Core.Interfaces;
 
 namespace StockManagement.API.Controllers {

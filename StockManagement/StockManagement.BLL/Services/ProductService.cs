@@ -1,13 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
-using StockManagement.API.Models;
+using StockManagement.CCC.Models;
 using StockManagement.API.Application.Entities;
 using StockManagement.API.Core.Interfaces;
 using StockManagement.DAL.Interfces;
 using StockManagement.DAL.Core.Entities;
 
-namespace StockManagement.API.Core.Services
+namespace StockManagement.BLL.Services
 {
     public class ProductService : IProductService {
         private readonly IEmailService _emailService;

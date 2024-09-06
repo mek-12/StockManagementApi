@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using StockManagement.API.Models;
+using StockManagement.CCC.Models;
 
 namespace StockManagement.API.Validations {
     public class ProductRequestValidator : AbstractValidator<ProductRequest> {

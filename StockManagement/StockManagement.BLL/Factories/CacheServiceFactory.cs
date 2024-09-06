@@ -1,11 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using StockManagement.API.Application.Entities;
-using StockManagement.API.Core.Interfaces;
-using StockManagement.API.Core.Services;
+using StockManagement.BLL.Interfaces;
+using StockManagement.BLL.Services;
 
-namespace StockManagement.API.Application.Factories
-{
+namespace StockManagement.API.Application.Factories {
     public class CacheServiceFactory {
         private readonly CacheSettings _cacheSettings;
         private readonly IServiceProvider _serviceProvider;

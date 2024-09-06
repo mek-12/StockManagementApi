@@ -4,7 +4,7 @@ using System.Net;
 using StockManagement.CCC.Entities;
 using StockManagement.BLL.Interfaces;
 
-namespace StockManagement.API.Core.Services
+namespace StockManagement.BLL.Services
 {
     public class EmailService : IEmailService {
         private readonly EmailSettings _emailSettings;

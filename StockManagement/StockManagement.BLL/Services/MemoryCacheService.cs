@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
-using StockManagement.API.Core.Interfaces;
+using StockManagement.BLL.Interfaces;
 
-namespace StockManagement.API.Core.Services {
+namespace StockManagement.BLL.Services {
     public class MemoryCacheService : ICacheService {
         private readonly IMemoryCache _memoryCache;
 

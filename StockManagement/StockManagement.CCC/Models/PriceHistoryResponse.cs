@@ -1,4 +1,4 @@
-﻿namespace StockManagement.API.Models {
+﻿namespace StockManagement.CCC.Models {
     public class PriceHistoryResponse {
         public decimal OldPrice { get; set; }
         public decimal NewPrice { get; set; }

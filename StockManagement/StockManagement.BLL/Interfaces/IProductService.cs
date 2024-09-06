@@ -1,6 +1,6 @@
-﻿using StockManagement.API.Models;
+﻿using StockManagement.CCC.Models;
 
-namespace StockManagement.API.Core.Interfaces {
+namespace StockManagement.BLL.Interfaces {
     public interface IProductService {
         Task<ProductResponse> CreateProductAsync(ProductRequest request);
         Task<UpdatePriceResponse?> UpdateProductPriceAsync(int id, UpdatePriceRequest request);
