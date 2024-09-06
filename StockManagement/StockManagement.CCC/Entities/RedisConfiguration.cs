@@ -1,4 +1,4 @@
-﻿namespace StockManagement.API.Application.Entities {
+﻿namespace StockManagement.CCC.Entities {
     public class RedisConfiguration {
         public string? Host { get; set; }
         public int Port { get; set; }

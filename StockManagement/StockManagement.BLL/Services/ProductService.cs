@@ -2,10 +2,10 @@
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using StockManagement.CCC.Models;
-using StockManagement.API.Application.Entities;
-using StockManagement.API.Core.Interfaces;
+using StockManagement.CCC.Entities;
 using StockManagement.DAL.Interfces;
 using StockManagement.DAL.Core.Entities;
+using StockManagement.BLL.Interfaces;
 
 namespace StockManagement.BLL.Services
 {

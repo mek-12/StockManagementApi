@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using StockManagement.API.Application.Entities;
 using StockManagement.BLL.Interfaces;
 using StockManagement.BLL.Services;
+using StockManagement.CCC.Entities;
 
 namespace StockManagement.API.Application.Factories {
     public class CacheServiceFactory {

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using StockManagement.BLL.Interfaces;
 using StockManagement.CCC.Models;
-using StockManagement.API.Core.Interfaces;
 
 namespace StockManagement.API.Controllers {
     [ApiController]
