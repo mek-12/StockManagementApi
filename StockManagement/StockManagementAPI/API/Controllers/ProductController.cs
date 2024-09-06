@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using StockManagementAPI.API.Models;
-using StockManagementAPI.Core.Interfaces;
+using StockManagement.API.Models;
+using StockManagement.API.Core.Interfaces;
 
-namespace StockManagementAPI.API.Controllers {
+namespace StockManagement.API.Controllers {
     [ApiController]
     [Route("api/[controller]")]
     public class ProductController : Controller {

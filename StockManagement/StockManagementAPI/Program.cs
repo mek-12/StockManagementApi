@@ -1,30 +1,50 @@
-using FluentValidation;
+嚜簑sing FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
-using StockManagementAPI.API.Validations;
-using StockManagementAPI.Core.Entities;
-using StockManagementAPI.Core.Interfaces;
-using StockManagementAPI.Core.Services;
-using StockManagementAPI.Infrastructure.Data;
+using Microsoft.Extensions.Options;
+using StackExchange.Redis;
+using StockManagement.API.Validations;
+using StockManagement.API.Application;
+using StockManagement.API.Application.Entities;
+using StockManagement.API.Application.Factories;
+using StockManagement.API.Core.Interfaces;
+using StockManagement.API.Core.Services;
+using StockManagement.API.Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var connectionString = builder.Configuration.GetConnectionString(Constants.DEFAULT_CONNECTION);
 
-// Entity Framework Core i蓾n DbContext'i kaydet
+// Entity Framework Core i癟in DbContext'i kaydet
 var services = builder.Services;
 services.AddDbContext<StockManagementDbContext>(options =>
     options.UseSqlServer(connectionString));
 services.AddMemoryCache();
 services.AddScoped<IProductService, ProductService>();
 services.AddScoped<IEmailService, EmailService>();
-
+services.AddSingleton<IConnectionMultiplexer>(provider => {
+    var cacheSettings = provider.GetRequiredService<IOptions<CacheSettings>>().Value;
+    var configurationOptions = new ConfigurationOptions
+    {
+        EndPoints = { $"{cacheSettings.RedisConfiguration.Host}:{cacheSettings.RedisConfiguration.Port}" },
+        Password = cacheSettings.RedisConfiguration.Password,
+        DefaultDatabase = cacheSettings.RedisConfiguration.Database,
+        AbortOnConnectFail = false
+    };
+    return ConnectionMultiplexer.Connect(configurationOptions);
+});
+// Burada ICacheService i inject ettim. Ve Requeired Service ile zorunlu
+// k覺l覺nan class tan CreateCacheService metodu ile hangi cacheService i kullanaca��覺n覺 belirtiyoruz.
+services.AddTransient<MemoryCacheService>();
+services.AddTransient<RedisCacheService>();
+services.AddScoped<ICacheService>(provider =>
+    provider.GetRequiredService<CacheServiceFactory>().CreateCacheService());
 services.AddControllers();
 services.AddFluentValidation(options => {
     options.RegisterValidatorsFromAssemblyContaining<ProductRequestValidator>();
 });
-services.Configure<CacheSettings>(builder.Configuration.GetSection("CacheSettings"));
+services.Configure<CacheSettings>(builder.Configuration.GetSection(Constants.CACHE_SETTINGS));
 
 // After migration:
 services.AddFluentValidationAutoValidation();
@@ -43,7 +63,5 @@ if (app.Environment.IsDevelopment()) {
 }
 
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();
