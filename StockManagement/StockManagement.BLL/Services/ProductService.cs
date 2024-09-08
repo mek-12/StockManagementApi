@@ -56,10 +56,11 @@ namespace StockManagement.BLL.Services {
                 ProductId = id,
                 OldPrice = product.Price,
                 NewPrice = request.NewPrice,
-                ChangeDate = DateTime.UtcNow.AddMinutes(5) // TO DO Bu süre configden okunabilir.
+                ChangeDate = DateTime.UtcNow.AddMinutes(HangfireScheduleTime)
             };
 
             product.PriceHistories?.Add(priceHistory);
+            // Basic background metod 
             //_ = Task.Run(async () => {
             //    await Task.Delay(TimeSpan.FromMinutes(HangfireScheduleTime));
             //    product.Price = request.NewPrice;

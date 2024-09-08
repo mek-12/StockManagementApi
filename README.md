@@ -114,9 +114,9 @@ Email settings are also configured in appsettings.json:
 * API Layer: Exposes the application functionality through HTTP endpoints. It handles incoming requests, delegates them to the appropriate services, and returns responses.
 
 ## Reflection and Extension-Based Service Registration
-> In this project, we use reflection to dynamically discover and register services from different assemblies. Specifically, we look for assemblies whose names start with "StockManagement" and only consider those for service registration. This allows for a modular architecture where each component can independently register its own services using a naming convention.
+In this project, we use reflection to dynamically discover and register services from different assemblies. Specifically, we look for assemblies whose names start with "StockManagement" and only consider those for service registration. This allows for a modular architecture where each component can independently register its own services using a naming convention.
 
-> We achieve this by scanning for an extension method named RegisterStockManagementServices in each assembly that extends IServiceCollection. This method is responsible for registering all the services in the respective assembly.
+We achieve this by scanning for an extension method named RegisterStockManagementServices in each assembly that extends IServiceCollection. This method is responsible for registering all the services in the respective assembly.
 
 ### Here’s how it works:
 
@@ -165,6 +165,14 @@ public static void AddReferencedProjectServices(this IServiceCollection services
     }
 }
 ```
+### Program.cs:
+```csharp
+using StockManagement.API.Helper;
+/// Other lines
+ServiceRegistrator.AddReferencedProjectServices(services, AppDomain.CurrentDomain.GetAssemblies(), configuration);
+/// Other lines
+```
+> As seen above, we only look at the assemblies that have the "RegisterStockManagementServices" extension method in the list returned by AppDomain.CurrentDomain.GetAssemblies(). If the extension method exists, we invoke the corresponding method. If you want to inspect the extension methods individually, you can check the Extensions folder in each layer. The name of the IServiceCollection extension method defined in each layer must be "RegisterStockManagementServices.
 ## Background Task Processing with Hangfire
 
 In this project, we use **Hangfire** to handle background tasks, such as delayed price updates and email notifications. Instead of blocking the main thread with `Task.Delay`, we utilize Hangfire to schedule and manage background jobs efficiently.
@@ -199,7 +207,45 @@ dotnet add package Hangfire
 dotnet add package Hangfire.EntityFrameworkCore
 dotnet add package Hangfire.AspNetCore
 ```
-We then configured Hangfire in Program.cs to use SQL Server for storing job details:
+We then configured Hangfire in StockManagement.BLL extension metod to use SQL Server for storing job details:
+```csharp
+public static void RegisterStockManagementServices(this IServiceCollection serviceCollection, IConfiguration configuration) {
+  // Other lines
+  serviceCollection.AddHangfire(p => p.UseSqlServerStorage(configuration.GetConnectionString(Constants.DEFAULT_CONNECTION)));
+  serviceCollection.AddHangfireServer();
+}
+```
+And when we start or build the Main solution, we can see the Hangfire tables in the database.
+![Picture](./assessts/images/HangfireTables.png)
 
+#### 2. Using Hangfire in ProductService for UpdatePrice by product id
+
+Imagine we have two products in the Product table, and we want to update the price of the product with ID 2 to 200.
+
+> StockManagement.BLL/Services/ProductService.cs
+```csharp
+using Hangfire;
+/// Other lines
+public async Task<UpdatePriceResponse?> UpdateProductPriceAsync(int id, UpdatePriceRequest request) {
+    /// Other lines
+    BackgroundJob.Schedule(() => UpdatePriceAndSendEmailAsync(product.Id, request.NewPrice, product.Name), TimeSpan.FromMinutes(HangfireScheduleTime));
+    /// Other lines
+}
+```
+
+Before:
+![Picture](./assessts/images/Record_before_updating.png)
+
+Request For UpdateProduct:
+![Picture](./assessts/images/Request_For_Update.png.png)
+
+Hangfire Scheduled Job View:
+![Picture](./assessts/images/Hangfire_Scheduled_Jobs.png)
+
+Hangfire Succeeded Job View:
+![Picture](./assessts/images/Hangfire_Succeeded_Jobs.png)
+
+Table Result: 
+![Picture](./assessts/images/Update_result.png)
 ## Contributing
     Contributions are welcome! Please submit a pull request or open an issue to suggest improvements or report bugs.
