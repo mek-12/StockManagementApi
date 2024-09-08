@@ -5,6 +5,10 @@ using StockManagement.CCC.Entities;
 using StockManagement.DAL.Interfces;
 using StockManagement.BLL.Interfaces;
 using AutoMapper;
+using Hangfire;
+using Microsoft.Extensions.Configuration;
+using System.Reflection.Metadata;
+using StockManagement.CCC;
 
 namespace StockManagement.BLL.Services {
     public class ProductService : IProductService {
@@ -13,12 +17,19 @@ namespace StockManagement.BLL.Services {
         private readonly ICacheService _cacheService;
         private readonly IProductRepository _productRepository;
         private readonly IMapper _mapper;
-        public ProductService(IEmailService emailService, IProductRepository productRepository, ICacheService cacheService, IOptions<CacheSettings> cacheSettings, IMapper mapper) {
+        private readonly IConfiguration _configuration;
+        private int HangfireScheduleTime {
+            get {
+                return _configuration.GetValue<int>(Constants.HANGFIRE_SCHEDULE_TIME);
+            }
+        }
+        public ProductService(IEmailService emailService, IProductRepository productRepository, ICacheService cacheService, IOptions<CacheSettings> cacheSettings, IMapper mapper, IConfiguration configuration) {
             _productRepository = productRepository;
             _emailService = emailService;
             _cacheDuration = cacheSettings.Value.DefaultCacheDuration;
             _cacheService = cacheService;
             _mapper = mapper;
+            _configuration = configuration;
         }
 
         public async Task<ProductResponse> CreateProductAsync(ProductRequest request) {
@@ -49,18 +60,30 @@ namespace StockManagement.BLL.Services {
             };
 
             product.PriceHistories?.Add(priceHistory);
-            _ = Task.Run(async () => {
-                await Task.Delay(TimeSpan.FromMinutes(5));
-                product.Price = request.NewPrice;
+            //_ = Task.Run(async () => {
+            //    await Task.Delay(TimeSpan.FromMinutes(HangfireScheduleTime));
+            //    product.Price = request.NewPrice;
 
-                await _productRepository.SaveChangesAsync();
-                await _emailService.SendEmailAsync("diazinfo@example.com", "Price Update", $"The price for {product.Name} has been updated to {product.Price}");
-            });
+            //    await _productRepository.SaveChangesAsync();
+            //    await _emailService.SendEmailAsync("diazinfo@example.com", "Price Update", $"The price for {product.Name} has been updated to {product.Price}");
+            //});
+            BackgroundJob.Schedule(() => UpdatePriceAndSendEmailAsync(product.Id, request.NewPrice, product.Name), TimeSpan.FromMinutes(HangfireScheduleTime));
 
             var response = _mapper.Map<UpdatePriceResponse>(product);
             response.ScheduledUpdate = priceHistory.ChangeDate;
 
             return response;
+        }
+
+        public async Task UpdatePriceAndSendEmailAsync(int productId, decimal newPrice, string? productName) {
+            var product = await _productRepository.FindAsync(productId);
+            if (product != null) {
+                product.Price = newPrice;
+                await _productRepository.SaveChangesAsync();
+
+                // E-posta gönderme işlemi
+                await _emailService.SendEmailAsync("diazinfo@example.com", "Price Update", $"The price for {productName} has been updated to {product.Price}");
+            }
         }
 
         public async Task<IEnumerable<ProductResponse>?> GetProductsAsync(decimal? minPrice, decimal? maxPrice, int? minStock) {

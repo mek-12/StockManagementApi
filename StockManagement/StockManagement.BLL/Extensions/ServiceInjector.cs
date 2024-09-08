@@ -1,16 +1,18 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Hangfire;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 using StockManagement.API.Application.Factories;
 using StockManagement.BLL.Interfaces;
 using StockManagement.BLL.Services;
+using StockManagement.CCC;
 using StockManagement.CCC.Entities;
 using StockManagement.DAL.Extensions;
 
-namespace StockManagement.BLL {
+namespace StockManagement.BLL.Extensions {
     public static class ServiceInjector {
-        public static void RegisterStockManagementServices(this IServiceCollection serviceCollection,IConfiguration configuration) {
+        public static void RegisterStockManagementServices(this IServiceCollection serviceCollection, IConfiguration configuration) {
             serviceCollection.AddMemoryCache();
             DALServiceInjector.RegisterStockManagementServices(serviceCollection, configuration);
             serviceCollection.AddScoped<IProductService, ProductService>();
@@ -28,8 +30,9 @@ namespace StockManagement.BLL {
             serviceCollection.AddTransient<MemoryCacheService>();
             serviceCollection.AddTransient<RedisCacheService>();
             serviceCollection.AddScoped<CacheServiceFactory>();
-            serviceCollection.AddScoped<ICacheService>(provider =>
-                provider.GetService<CacheServiceFactory>().CreateCacheService());
+            serviceCollection.AddScoped(provider => provider.GetService<CacheServiceFactory>()?.CreateCacheService());
+            serviceCollection.AddHangfire(p => p.UseSqlServerStorage(configuration.GetConnectionString(Constants.DEFAULT_CONNECTION)));
+            serviceCollection.AddHangfireServer();
         }
     }
 }

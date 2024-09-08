@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using StockManagement.API.Validations;
 using StockManagement.CCC;
 using StockManagement.API.Helper;
+using Hangfire;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,13 +25,13 @@ services.AddValidatorsFromAssemblyContaining<ProductRequestValidator>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment()) {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseHangfireDashboard();
 }
 
 app.UseAuthorization();

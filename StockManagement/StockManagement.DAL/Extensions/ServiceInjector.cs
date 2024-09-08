@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using StockManagement.DAL.Concrete;
-using StockManagement.CCC.Entities;
 using StockManagement.DAL.Interfces;
 using Microsoft.Extensions.Configuration;
 using StockManagement.CCC;
