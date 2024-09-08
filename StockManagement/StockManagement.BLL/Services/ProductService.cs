@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using StockManagement.CCC.Models;
 using StockManagement.CCC.Entities;
@@ -7,8 +6,7 @@ using StockManagement.DAL.Interfces;
 using StockManagement.BLL.Interfaces;
 using AutoMapper;
 
-namespace StockManagement.BLL.Services
-{
+namespace StockManagement.BLL.Services {
     public class ProductService : IProductService {
         private readonly IEmailService _emailService;
         private readonly int _cacheDuration;
@@ -50,18 +48,19 @@ namespace StockManagement.BLL.Services
                 ChangeDate = DateTime.UtcNow.AddMinutes(5) // TO DO Bu süre configden okunabilir.
             };
 
-            product.PriceHistories.Add(priceHistory);
-            await Task.Delay(TimeSpan.FromMinutes(5));
-            product.Price = request.NewPrice;
+            product.PriceHistories?.Add(priceHistory);
+            _ = Task.Run(async () => {
+                await Task.Delay(TimeSpan.FromMinutes(5));
+                product.Price = request.NewPrice;
 
-            await _productRepository.SaveChangesAsync();
-            await _emailService.SendEmailAsync("diazinfo@example.com", "Price Update", $"The price for {product.Name} has been updated to {product.Price}");
+                await _productRepository.SaveChangesAsync();
+                await _emailService.SendEmailAsync("diazinfo@example.com", "Price Update", $"The price for {product.Name} has been updated to {product.Price}");
+            });
 
-            return new UpdatePriceResponse {
-                ProductId = product.Id,
-                NewPrice = product.Price,
-                ScheduledUpdate = priceHistory.ChangeDate
-            };
+            var response = _mapper.Map<UpdatePriceResponse>(product);
+            response.ScheduledUpdate = priceHistory.ChangeDate;
+
+            return response;
         }
 
         public async Task<IEnumerable<ProductResponse>?> GetProductsAsync(decimal? minPrice, decimal? maxPrice, int? minStock) {
@@ -81,17 +80,7 @@ namespace StockManagement.BLL.Services
 
                 var products = await query.Include(p => p.PriceHistories).ToListAsync();
 
-                cachedProducts = products.Select(p => new ProductResponse {
-                    Id = p.Id,
-                    Name = p.Name,
-                    StockQuantity = p.StockQuantity,
-                    Price = p.Price,
-                    PriceHistories = p.PriceHistories.Select(ph => new PriceHistoryResponse {
-                        OldPrice = ph.OldPrice,
-                        NewPrice = ph.NewPrice,
-                        ChangeDate = ph.ChangeDate
-                    }).ToList()
-                }).ToList();
+                cachedProducts = _mapper.Map<List<ProductResponse>>(products);
 
                 _cacheService.Set(cacheKey, cachedProducts, TimeSpan.FromSeconds(_cacheDuration));
             }
@@ -104,17 +93,7 @@ namespace StockManagement.BLL.Services
             if (product == null)
                 return null;
 
-            return new ProductResponse {
-                Id = product.Id,
-                Name = product.Name,
-                StockQuantity = product.StockQuantity,
-                Price = product.Price,
-                PriceHistories = product.PriceHistories.Select(ph => new PriceHistoryResponse {
-                    OldPrice = ph.OldPrice,
-                    NewPrice = ph.NewPrice,
-                    ChangeDate = ph.ChangeDate
-                }).ToList()
-            };
+            return _mapper.Map<ProductResponse>(product);
         }
 
     }

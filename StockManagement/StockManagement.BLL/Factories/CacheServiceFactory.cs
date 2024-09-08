@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using StockManagement.BLL.Interfaces;
 using StockManagement.BLL.Services;
+using StockManagement.CCC;
 using StockManagement.CCC.Entities;
 
 namespace StockManagement.API.Application.Factories {

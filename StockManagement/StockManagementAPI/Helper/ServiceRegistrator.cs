@@ -2,23 +2,34 @@
 
 namespace StockManagement.API.Helper {
     public static class ServiceRegistrator {
-        public static void AddReferencedProjectServices(this IServiceCollection services, Assembly[] assemblies) {
-            // Tüm referans verilen assembly'leri tarıyoruz
+        public static void AddReferencedProjectServices(this IServiceCollection services, Assembly[] assemblies, IConfiguration configurationManager) {
+            //  We are scanning all the referenced assemblies.
             foreach (var assembly in assemblies) {
-                // Her bir assembly'deki tüm tipleri alıyoruz
+                // We are retrieving all the types in each assembly.
                 var types = assembly.GetTypes();
 
-                // 'IServiceCollection' parametresi alan static metotları buluyoruz
+                // We are finding the static methods that take an 'IServiceCollection' parameter.
                 var serviceRegistrationMethods = types
                 .SelectMany(t => t.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
                 .Where(m => m.GetParameters().Any(p => p.ParameterType == typeof(IServiceCollection)));
 
-                // Bulunan metotları çağırıyoruz
+                // Invoke methods
                 foreach (var method in serviceRegistrationMethods) {
-                    // Metodun ilk parametresinin IServiceCollection olduğundan emin ol
-                    if (method.GetParameters()[0].ParameterType == typeof(IServiceCollection)) {
-                        // Metodu invoke ederek servisleri kaydediyoruz
-                        method.Invoke(null, new object[] { services });
+                    // Ensure that the first parameter of the method is 'IServiceCollection'.
+                    var parameters = method.GetParameters();
+                    if(parameters.Length == 0) {
+                        return;
+                    }
+                    if(parameters.Length == 1) {
+                        if (parameters[0].ParameterType == typeof(IServiceCollection)) {
+                            method.Invoke(null, [services]);
+                        }
+                    }
+                    if (parameters.Length == 2) {
+                        if (parameters[0].ParameterType == typeof(IServiceCollection) &&
+                            parameters[1].ParameterType == typeof(IConfiguration)) {
+                            method.Invoke(null, [services , configurationManager]);
+                        }
                     }
                 }
             }

@@ -7,6 +7,11 @@ namespace StockManagement.CCC.Mappings {
         public MappingProfile() {
             CreateMap<Product, ProductResponse>();
             CreateMap<PriceHistory, PriceHistoryResponse>();
+            CreateMap<Product, UpdatePriceResponse>().
+                ForMember(dest => dest.NewPrice, opt => opt.MapFrom(src => src.Price));
+            CreateMap<Product, ProductResponse>()
+            .ForMember(dest => dest.PriceHistories, opt => opt.MapFrom(src => src.PriceHistories));
+            CreateMap<PriceHistory, PriceHistoryResponse>();
         }
     }
 }
