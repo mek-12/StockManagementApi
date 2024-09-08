@@ -2,8 +2,8 @@
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using StockManagement.API.Validations;
-using StockManagement.API.Application;
-using StockManagement.BLL.Helper;
+using StockManagement.CCC;
+using StockManagement.API.Helper;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -1,4 +1,4 @@
-﻿namespace StockManagement.DAL.Core.Entities
+﻿namespace StockManagement.CCC.Entities
 {
     public class Product {
         public int Id { get; set; }

@@ -1,10 +1,8 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace StockManagement.API.Migrations
-{
+namespace StockManagement.API.Migrations {
     /// <inheritdoc />
     public partial class InitialCreate : Migration
     {

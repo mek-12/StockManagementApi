@@ -4,8 +4,8 @@ using Microsoft.Extensions.Options;
 using StockManagement.CCC.Models;
 using StockManagement.CCC.Entities;
 using StockManagement.DAL.Interfces;
-using StockManagement.DAL.Core.Entities;
 using StockManagement.BLL.Interfaces;
+using AutoMapper;
 
 namespace StockManagement.BLL.Services
 {
@@ -14,11 +14,13 @@ namespace StockManagement.BLL.Services
         private readonly int _cacheDuration;
         private readonly ICacheService _cacheService;
         private readonly IRepository<Product> _productRepository;
-        public ProductService(IEmailService emailService, IRepository<Product> productRepository, ICacheService cacheService, IOptions<CacheSettings> cacheSettings) {
+        private readonly IMapper _mapper;
+        public ProductService(IEmailService emailService, IRepository<Product> productRepository, ICacheService cacheService, IOptions<CacheSettings> cacheSettings, IMapper mapper) {
             _productRepository = productRepository;
             _emailService = emailService;
             _cacheDuration = cacheSettings.Value.DefaultCacheDuration;
             _cacheService = cacheService;
+            _mapper = mapper;
         }
 
         public async Task<ProductResponse> CreateProductAsync(ProductRequest request) {
@@ -33,12 +35,7 @@ namespace StockManagement.BLL.Services
             await _productRepository.AddAsync(product);
             await _productRepository.SaveChangesAsync();
 
-            return new ProductResponse {
-                Id = product.Id,
-                Name = product.Name,
-                StockQuantity = product.StockQuantity,
-                Price = product.Price
-            };
+            return _mapper.Map<ProductResponse>(product);
         }
 
         public async Task<UpdatePriceResponse?> UpdateProductPriceAsync(int id, UpdatePriceRequest request) {

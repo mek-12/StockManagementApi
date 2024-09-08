@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using StockManagement.DAL.Core.Entities;
+using StockManagement.CCC.Entities;
 
 namespace StockManagement.DAL.Concrete {
     public class StockManagementDbContext : DbContext {

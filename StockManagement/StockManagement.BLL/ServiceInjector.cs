@@ -6,7 +6,7 @@ using StockManagement.BLL.Interfaces;
 using StockManagement.BLL.Services;
 using StockManagement.CCC.Entities;
 
-namespace StockManagement.BLL {
+namespace StockManagement.API.Helper {
     public static class ServiceInjector {
         public static void RegisterDefaultServices(this IServiceCollection serviceCollection) {
             serviceCollection.AddMemoryCache();

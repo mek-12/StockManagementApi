@@ -1,7 +1,6 @@
 ﻿using System.Reflection;
-using Microsoft.Extensions.DependencyInjection;
 
-namespace StockManagement.BLL.Helper {
+namespace StockManagement.API.Helper {
     public static class ServiceRegistrator {
         public static void AddReferencedProjectServices(this IServiceCollection services, Assembly[] assemblies) {
             // Tüm referans verilen assembly'leri tarıyoruz

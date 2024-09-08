@@ -1,4 +1,4 @@
-﻿namespace StockManagement.DAL.Core.Entities {
+﻿namespace StockManagement.CCC.Entities {
     public class PriceHistory {
         public int Id { get; set; }
         public int ProductId { get; set; }
