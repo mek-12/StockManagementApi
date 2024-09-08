@@ -27,8 +27,9 @@ namespace StockManagement.BLL {
             });
             serviceCollection.AddTransient<MemoryCacheService>();
             serviceCollection.AddTransient<RedisCacheService>();
+            serviceCollection.AddScoped<CacheServiceFactory>();
             serviceCollection.AddScoped<ICacheService>(provider =>
-                provider.GetRequiredService<CacheServiceFactory>().CreateCacheService());
+                provider.GetService<CacheServiceFactory>().CreateCacheService());
         }
     }
 }

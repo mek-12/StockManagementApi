@@ -7,16 +7,10 @@ using StockManagement.API.Helper;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-//var connectionString = builder.Configuration.GetConnectionString(Constants.DEFAULT_CONNECTION);
-
 // Entity Framework Core için DbContext'i kaydet
 var services = builder.Services;
 IConfiguration configuration = builder.Configuration;
 ServiceRegistrator.AddReferencedProjectServices(services, AppDomain.CurrentDomain.GetAssemblies(), configuration);
-
-// Burada ICacheService i inject ettim. Ve Requeired Service ile zorunlu
-// kılınan class tan CreateCacheService metodu ile hangi cacheService i kullanacağını belirtiyoruz.
 
 services.AddControllers();
 services.AddFluentValidation(options => {

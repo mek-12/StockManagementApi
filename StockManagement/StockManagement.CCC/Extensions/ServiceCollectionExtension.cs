@@ -2,8 +2,9 @@
 
 namespace StockManagement.CCC.Extensions {
     public static class ServiceCollectionExtension {
-        public static void RegisterDefaultServices(this IServiceCollection services) {
-            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+        public static void RegisterStockManagementServices(this IServiceCollection services) {
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies().Where(ass =>(bool)(ass?.GetName()?.FullName?.Contains("StockManagement")));
+            services.AddAutoMapper(assemblies);
         }
     }
 }
