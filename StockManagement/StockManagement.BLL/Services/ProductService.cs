@@ -11,9 +11,9 @@ namespace StockManagement.BLL.Services {
         private readonly IEmailService _emailService;
         private readonly int _cacheDuration;
         private readonly ICacheService _cacheService;
-        private readonly IRepository<Product> _productRepository;
+        private readonly IProductRepository _productRepository;
         private readonly IMapper _mapper;
-        public ProductService(IEmailService emailService, IRepository<Product> productRepository, ICacheService cacheService, IOptions<CacheSettings> cacheSettings, IMapper mapper) {
+        public ProductService(IEmailService emailService, IProductRepository productRepository, ICacheService cacheService, IOptions<CacheSettings> cacheSettings, IMapper mapper) {
             _productRepository = productRepository;
             _emailService = emailService;
             _cacheDuration = cacheSettings.Value.DefaultCacheDuration;

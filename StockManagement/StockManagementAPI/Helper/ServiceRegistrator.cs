@@ -15,6 +15,9 @@ namespace StockManagement.API.Helper {
 
                 // Invoke methods
                 foreach (var method in serviceRegistrationMethods) {
+                    if(method.Name != "RegisterStockManagementServices") {
+                        continue;
+                    }
                     // Ensure that the first parameter of the method is 'IServiceCollection'.
                     var parameters = method.GetParameters();
                     if(parameters.Length == 0) {
@@ -22,13 +25,13 @@ namespace StockManagement.API.Helper {
                     }
                     if(parameters.Length == 1) {
                         if (parameters[0].ParameterType == typeof(IServiceCollection)) {
-                            method.Invoke(null, [services]);
+                            method.Invoke(null, new object[] { services });
                         }
                     }
                     if (parameters.Length == 2) {
                         if (parameters[0].ParameterType == typeof(IServiceCollection) &&
                             parameters[1].ParameterType == typeof(IConfiguration)) {
-                            method.Invoke(null, [services , configurationManager]);
+                            method.Invoke(null, new object[] { services, configurationManager });
                         }
                     }
                 }

@@ -1,15 +1,18 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 using StockManagement.API.Application.Factories;
 using StockManagement.BLL.Interfaces;
 using StockManagement.BLL.Services;
 using StockManagement.CCC.Entities;
+using StockManagement.DAL.Extensions;
 
-namespace StockManagement.API.Helper {
+namespace StockManagement.BLL {
     public static class ServiceInjector {
-        public static void RegisterDefaultServices(this IServiceCollection serviceCollection) {
+        public static void RegisterStockManagementServices(this IServiceCollection serviceCollection,IConfiguration configuration) {
             serviceCollection.AddMemoryCache();
+            DALServiceInjector.RegisterStockManagementServices(serviceCollection, configuration);
             serviceCollection.AddScoped<IProductService, ProductService>();
             serviceCollection.AddScoped<IEmailService, EmailService>();
             serviceCollection.AddSingleton<IConnectionMultiplexer>(provider => {

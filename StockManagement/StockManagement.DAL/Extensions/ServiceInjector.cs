@@ -6,13 +6,13 @@ using StockManagement.DAL.Interfces;
 using Microsoft.Extensions.Configuration;
 using StockManagement.CCC;
 
-namespace StockManagement.DAL {
-    public static class ServiceInjector {
-        public static void RegisterDefaultServices(this IServiceCollection serviceCollection, IConfiguration configuration) {
+namespace StockManagement.DAL.Extensions {
+    public static class DALServiceInjector {
+        public static void RegisterStockManagementServices(this IServiceCollection serviceCollection, IConfiguration configuration) {
             serviceCollection.AddDbContext<StockManagementDbContext>(options =>
             options.UseSqlServer(configuration.GetConnectionString(Constants.DEFAULT_CONNECTION))); 
-            serviceCollection.AddScoped<IRepository<Product>, Repository<Product>>();
-            serviceCollection.AddScoped<IRepository<PriceHistory>, Repository<PriceHistory>>();
+            serviceCollection.AddScoped<IProductRepository, ProductRepository>();
+            serviceCollection.AddScoped<IPriceHistoryRepository, PriceHistoryRepository>();
         }
     }
 }
